@@ -23,7 +23,7 @@ Sp500_Time_new = Sp500_Time.rename(columns={'Name': 'Symbol'})
 
 #print first 5 lines of updated table
 print(Sp500_Time_new.head())
-
+á
 #left join merge for the 2 tables, on the mutual column "Symbol"
 
 
