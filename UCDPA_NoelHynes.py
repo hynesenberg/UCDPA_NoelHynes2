@@ -1,7 +1,8 @@
 import pandas as pd
+
 import numpy as np
 import matplotlib.pyplot as plt
-#%matplotlib inline
+
 from pylab import *
 
 
@@ -33,6 +34,9 @@ Sp500_Time_new['Symbol'].replace(to_replace=['PCLN'],value='BKNG',inplace=True)
 #left join merge for the 2 tables, on the mutual column "Symbol"
 Sp500 = Sp500_Time_new.merge(Sp500_Detail, on='Symbol', how='left')
 print(Sp500.head())
+print(Sp500.info())
+
+#could add a dropna() here but want full range of values for next chart
 
 #second copy of left join merge of the tables to edit later in the file
 Sp500_10 = Sp500_Time_new.merge(Sp500_Detail, on='Symbol', how='left')
@@ -45,49 +49,52 @@ print(Sp500_last)
 Sp500_last_2 =Sp500_last.reset_index()
 print(Sp500_last_2)
 
+#print table info for more insight
 print(Sp500_last_2.info())
-#
 
+#next we will produce scatter chart of the closing prices for the 505 stocks, adding labels and a title and using the index for the x axis
 plt.scatter(Sp500_last_2.index, Sp500_last_2['close'])
 plt.title("Closing Values for each SP500 Stock")
 plt.xlabel("Stock Index")
 plt.ylabel("Closing Stock Value")
 plt.show()
 
-#hkgk
-#Sp500_last_2 =Sp500_last_2.sort_values(by=['Founded'])
-ax = Sp500_last_2['Country'].value_counts().plot.bar()
+Sp500_last_2 = Sp500_last_2.dropna()
+print(Sp500_last_2.info())
 
-#plt.figure(figsize=(8,6))
+#now we will produce a bar chart with the country of origin for these large companies
+ax = Sp500_last_2['Country'].value_counts().plot.bar()
 _ = ax.set_title('Countries where S&P500 Stock were Founded')
 _ = ax.set_xlabel('Country where Stock Founded')
 _ = ax.set_ylabel('# of Stocks Founded')
 plt.show()
 
-#n hjlhk
-Sp500_last_3 =Sp500_last_2.sort_values(by=['Founded'])
-#reset index
-Sp500_last.plot(kind='scatter', x= 'Founded', y='Symbol')
+#scatter chart on year founded
+Sp500_last_2.plot(kind='scatter', x= 'Founded', y='Symbol')
 #set_xticks(Sp500_last['Country'][::10])
 plt.title("Year S&P500 Stock were Founded")
 plt.xlabel("Year")
 plt.ylabel("Stock Index")
 plt.show()
 
+#count the stocks by sector to show the mix of industries which feature on the market index. using different colours to represent each industry
 trx = Sp500_last['GICS Sector'].value_counts().plot.bar(color=['grey', 'c','red' ,'peru', 'lightpink', 'yellow', 'orange','blue', 'purple', 'green', 'lavender'])
 plt.title("Industry Sector of S&P500 Stocks")
 plt.xlabel("Industry Sector")
 plt.ylabel("# of Stocks")
 plt.show()
 
+#sort the closing values to find the stocks with the largest share prices, the top 10
 Sp500_sort=Sp500_last.sort_values(by=['close'])
 Sp500_top10 = Sp500_sort.tail(10)
 
+
+#create a list of the top 10 stocks
 Top10 =[]
 Top10 = Sp500_top10['Symbol'].tolist()
 print(Top10)
 
-
+#filter the entire dataset down to the stocks in the top 10
 Sp500_T10 = Sp500_10[Sp500_10['Symbol'].isin(Top10)]
 print(Sp500_T10)
 
@@ -96,12 +103,13 @@ Sp500_T10["date"] = pd.to_datetime(Sp500_T10["date"])
 Sp500_T10_last = Sp500_T10.drop_duplicates(subset=['Symbol'], keep='last')
 Sp500_T10_last_2 =Sp500_T10_last.sort_values(by=['Founded'])
 
-#a2x = Sp500_T10_last_2['Founded'].value_counts().plot.bar()
+#scatter plot of when the top 10 stocks were founded
 Sp500_T10_last_2.plot(kind='scatter', x= 'Founded', y='Symbol')
 plt.title("Year Top 10 S&P500 Stocks were Founded")
 plt.xlabel("Year")
 plt.ylabel("Stock Index")
 plt.show()
+
 
 Sp500_T10["date"] = pd.to_datetime(Sp500_T10["date"])
 Sp500_T10.pivot(index="date", columns="Symbol", values="close").plot()
@@ -116,23 +124,10 @@ _ = ax.set_xlabel('Country where Stock Founded')
 _ = ax.set_ylabel('# of Stocks Founded')
 plt.show()
 
+
 trex = Sp500_T10_last_2['GICS Sector'].value_counts().plot.bar(color=['grey', 'c','red' ,'peru', 'lightpink', 'yellow', 'orange','blue', 'purple', 'green', 'lavender'])
 plt.title("Industry Sector of Top10 S&P500 Stocks")
 plt.xlabel("Industry Sector")
 plt.ylabel("# of Stocks")
 plt.show()
 
-
-###########
-Botswana = np.array(df['Botswana'])        #filter out the Botswana data from the dataset
-
-
-plt.scatter(Year,World, c='b', marker='x', label='World')
-plt.scatter(Year, Botswana, c='g', marker='s', label='Botswana')    #As well as scattering the World urban Pop % over time, let's also plot the Botswana urban % over the last 60 years. we will plot with green boxes
-plt.plot(Year, fitLine, c='r')                       #Display World Fitline in Red
-plt.title('Linear Regression')           #Adding a title, and axis labels for tidyness
-plt.xlabel('Year')
-plt.ylabel('Urban Population %')
-
-plt.legend(loc='upper left')            #Add a legend for clarity
-plt.show()
