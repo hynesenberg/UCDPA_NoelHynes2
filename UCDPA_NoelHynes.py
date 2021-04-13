@@ -110,7 +110,7 @@ plt.xlabel("Year")
 plt.ylabel("Stock Index")
 plt.show()
 
-
+#plot stocks prices over time
 Sp500_T10["date"] = pd.to_datetime(Sp500_T10["date"])
 Sp500_T10.pivot(index="date", columns="Symbol", values="close").plot()
 plt.title("Top 10 S&P500 Stocks Prices")
@@ -118,16 +118,52 @@ plt.xlabel("Year")
 plt.ylabel("Stock Price")
 plt.show()
 
+#plot count by country of where top 10 were founded
 arx = Sp500_T10_last_2['Country'].value_counts().plot.bar()
 _ = ax.set_title('Countries where Top 10 S&P500 Stock were Founded')
 _ = ax.set_xlabel('Country where Stock Founded')
 _ = ax.set_ylabel('# of Stocks Founded')
 plt.show()
 
-
+#plot industries of top 10 stocks
 trex = Sp500_T10_last_2['GICS Sector'].value_counts().plot.bar(color=['grey', 'c','red' ,'peru', 'lightpink', 'yellow', 'orange','blue', 'purple', 'green', 'lavender'])
 plt.title("Industry Sector of Top10 S&P500 Stocks")
 plt.xlabel("Industry Sector")
 plt.ylabel("# of Stocks")
 plt.show()
 
+
+###
+
+Sp500_GOOG = Sp500[Sp500['Symbol']=="GOOG"]
+print(Sp500_GOOG)
+
+Sp500_GOOG = Sp500_GOOG.reset_index()
+print(Sp500_GOOG)
+
+
+Year = np.array(Sp500_GOOG['index'])
+GOOG_Close = np.array(Sp500_GOOG['close'])
+
+plt.scatter(Year, GOOG_Close)
+plt.show()
+
+from scipy import stats                  #import scipy package from  stats libary
+
+slope, intercept, r_value, p_value, std_err = stats.linregress(Year, GOOG_Close)
+
+print(r_value ** 2)  #calculating our R**2 value
+
+import matplotlib.pyplot as plt         #import libraries needed
+
+def predict(x):
+    return slope * x + intercept
+
+fitLine = predict(Year)                 #predict a fitline to show predictions using linear regression on timstep and Stock price
+
+plt.scatter(Year, GOOG_Close)               #scatter our data
+plt.plot(Year, fitLine, c='r')         #plot our fitline, in colour red
+plt.title('Linear Regression')
+plt.xlabel('Year')
+plt.ylabel('Stock Price')
+plt.show()
